@@ -1,0 +1,140 @@
+<div class="container">
+  <h1>{{ editMode ? 'Edit Employee' : 'Employee Registration' }}</h1>
+  <form [formGroup]="employeeForm" (ngSubmit)="save()">
+    <!-- First & Last Name -->
+    <div class="row">
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" formControlName="firstName" maxlength="50"
+          [class.input-error]="f['firstName'].invalid && f['firstName'].touched"
+          [class.max-reached]="f['firstName'].value?.length === 50" placeholder="Enter first name">
+        <div class="error" *ngIf="(f['firstName'].touched || f['firstName'].dirty) && f['firstName'].errors">
+          <span *ngIf="f['firstName'].errors?.['required']">First Name is required</span>
+          <span *ngIf="f['firstName'].errors?.['minlength'] && f['firstName'].value?.length < 50">Minimum 2
+            characters</span>
+          <span *ngIf="f['firstName'].errors?.['pattern'] && f['firstName'].value?.length < 50">Only letters and spaces
+            are allowed</span>
+        </div>
+        <div class="hint error" *ngIf="f['firstName'].value?.length === 50">Maximum 50 characters reached</div>
+      </div>
+
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" formControlName="lastName" maxlength="50"
+          [class.input-error]="f['lastName'].invalid && f['lastName'].touched"
+          [class.max-reached]="f['lastName'].value?.length === 50" placeholder="Enter last name">
+        <div class="error" *ngIf="(f['lastName'].touched || f['lastName'].dirty) && f['lastName'].errors">
+          <span *ngIf="f['lastName'].errors?.['required']">Last Name is required</span>
+          <span *ngIf="f['lastName'].errors?.['minlength'] && f['lastName'].value?.length < 50">Minimum 2
+            characters</span>
+          <span *ngIf="f['lastName'].errors?.['pattern'] && f['lastName'].value?.length < 50">Only letters and spaces
+            are allowed</span>
+        </div>
+        <div class="hint error" *ngIf="f['lastName'].value?.length === 50">Maximum 50 characters allowed</div>
+      </div>
+    </div>
+
+    <!-- Date of Birth & Age -->
+    <div class="row">
+      <div class="form-group">
+        <label>Date of Birth *</label>
+        <input type="date" formControlName="dateOfBirth" [max]="today"
+          [class.input-error]="f['dateOfBirth'].invalid && f['dateOfBirth'].touched">
+        <div class="error" *ngIf="f['dateOfBirth'].touched && f['dateOfBirth'].errors">
+          <span *ngIf="f['dateOfBirth'].errors?.['required']">Date of Birth is required</span>
+          <span *ngIf="f['dateOfBirth'].errors?.['ageRange']">Age must be between 18 and 110 years</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Age</label>
+        <input type="text" formControlName="age" placeholder="Auto-calculated">
+      </div>
+    </div>
+
+    <!-- Mobile & Email -->
+    <div class="row">
+      <div class="form-group">
+        <label>Mobile *</label>
+        <input type="tel" formControlName="mobile" maxlength="10"
+          [class.input-error]="(f['mobile'].invalid || mobileTaken) && (f['mobile'].touched || f['mobile'].dirty)"
+          placeholder="Enter 10 digit mobile" (keypress)="allowDigitsOnly($event)" (paste)="handleMobilePaste($event)">
+
+        <div class="error" *ngIf="(f['mobile'].touched || f['mobile'].dirty) && (f['mobile'].errors || mobileTaken)">
+          <span *ngIf="f['mobile'].errors?.['required']">Mobile is required</span>
+          <span *ngIf="f['mobile'].errors?.['pattern']">Enter 10 digit number</span>
+          <span *ngIf="mobileTaken">Mobile already exists</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" formControlName="email" maxlength="254"
+          [class.input-error]="(f['email'].invalid || emailTaken) && (f['email'].touched || f['email'].dirty)"
+          [class.max-reached]="f['email'].value?.length === 254" placeholder="Enter email">
+
+        <div class="error" *ngIf="(f['email'].touched || f['email'].dirty) && (f['email'].errors || emailTaken)">
+          <span *ngIf="f['email'].errors?.['required']">Email is required</span>
+          <span *ngIf="f['email'].errors?.['pattern']">Enter a valid email</span>
+          <span *ngIf="emailTaken">Email already exists</span>
+        </div>
+        <div class="hint error" *ngIf="f['email'].value?.length === 254">Maximum 254 characters allowed</div>
+      </div>
+    </div>
+
+    <!-- Address & Gender -->
+    <div class="row full-width">
+      <div class="form-group">
+        <label>Address 1 *</label>
+        <textarea formControlName="address1" maxlength="255"
+          [class.input-error]="f['address1'].invalid && f['address1'].touched"
+          [class.max-reached]="f['address1'].value?.length === 255"></textarea>
+        <div class="error" *ngIf="f['address1'].touched && f['address1'].errors">
+          <span *ngIf="f['address1'].errors?.['required']">Address is required</span>
+          <span *ngIf="f['address1'].errors?.['minlength']">Minimum 4 characters required</span>
+        </div>
+        <div class="hint error" *ngIf="f['address1'].value?.length === 255">Maximum 255 characters allowed</div>
+      </div>
+    </div>
+
+    <div class="row full-width">
+      <div class="form-group">
+        <label>Address 2</label>
+        <textarea formControlName="address2" maxlength="255"
+          [class.input-error]="f['address2'].invalid && f['address2'].touched"
+          [class.max-reached]="f['address2'].value?.length === 255"></textarea>
+        <div class="error" *ngIf="f['address2'].touched && f['address2'].errors">
+          <span *ngIf="f['address2'].errors?.['minlength']">Minimum 4 characters required</span>
+        </div>
+        <div class="hint error" *ngIf="f['address2'].value?.length === 255">Maximum 255 characters allowed</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>Gender *</label>
+        <div class="gender-group">
+          <label><input type="radio" formControlName="gender" value="Male"> Male</label>
+          <label><input type="radio" formControlName="gender" value="Female"> Female</label>
+          <label><input type="radio" formControlName="gender" value="Other"> Other</label>
+        </div>
+        <div class="error" *ngIf="f['gender'].touched && f['gender'].errors">
+          <span>Gender is required</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="center">
+      <div class="button-group">
+        <button type="submit" class="btn btn-submit"
+          [disabled]="employeeForm.invalid || emailTaken || mobileTaken || (editMode && !hasChanges())"
+          [class.enabled]="employeeForm.valid && !emailTaken && !mobileTaken && (!editMode || hasChanges())">
+          {{ editMode ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-clear" (click)="editMode ? cancel() : resetForm()">{{ editMode ? 'Cancel' : 'Reset' }}</button>
+      </div>
+      <a class="view-all-link" (click)="viewEmployees()">View All Employees</a>
+    </div>
+  </form>
+</div>

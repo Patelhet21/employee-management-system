@@ -1,0 +1,7 @@
+<div *ngIf="(toast$ | async) as toast">
+  <div class="toast"
+       *ngIf="toast.visible"
+       [ngClass]="toast.type">
+    {{ toast.message }}
+  </div>
+</div>
